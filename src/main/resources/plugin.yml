@@ -1,0 +1,17 @@
+name: Laputa
+version: ${project.version}
+description: ${plugin-description}
+api-version: ${spigot-api-version}
+authors: [MYXOMOPX]
+database: false
+main: ru.flinbein.laputa.LaputaPlugin
+
+libraries:
+  - org.jetbrains.kotlin:kotlin-stdlib:${kotlin-std-lib-version}
+
+commands:
+  script:
+    description: view help
+    aliases: ['/laputa']
+    usage: /laputa
+    permission: laputa.command
