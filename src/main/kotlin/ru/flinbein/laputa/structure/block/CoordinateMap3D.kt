@@ -1,22 +1,21 @@
 package ru.flinbein.laputa.structure.block
 
-import ru.flinbein.laputa.structure.geometry.Point3D
+class CoordinateMap3D<KEY, VAL> {
+    private val map: HashMap<KEY, VAL> = HashMap();
 
-class CoordinateMap3D {
-    private val map: HashMap<Point3D, LaputaBlock> = HashMap();
-
-    fun get(x: Double, y: Double, z: Double, defaultValue: () -> LaputaBlock): LaputaBlock {
-        return map.getOrPut(Point3D(x,y,z), defaultValue);
-    }
-    fun get(point: Point3D, defaultValue: () -> LaputaBlock): LaputaBlock {
+    fun get(point: KEY, defaultValue: () -> VAL): VAL {
         return map.getOrPut(point, defaultValue);
+    }
+
+    fun has(key: KEY): Boolean {
+        return map.containsKey(key);
     }
 
     fun clear() {
         map.clear();
     }
 
-    fun getValues(): List<LaputaBlock> {
+    fun getValues(): List<VAL> {
         return map.values.toList();
     }
 }
