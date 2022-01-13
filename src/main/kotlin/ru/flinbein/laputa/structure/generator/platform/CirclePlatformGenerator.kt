@@ -8,7 +8,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class CirclePlatformGenerator : LayerGenerator {
 
@@ -49,27 +48,7 @@ class CirclePlatformGenerator : LayerGenerator {
         val platformBlocks = centerBlock.getBlocksByShape(unionShape);
 
         platformBlocks.forEach {
-            it.addTag(PlatformTags.PLATFORM);
-        }
-
-        val abyssBlocks = platformBlocks.flatMap {
-            it.getNeighbors()
-        }.filter {
-            it.isEmpty()
-        }.distinct();
-
-        abyssBlocks.forEach {
-            it.addTag(PlatformTags.ABYSS)
-        }
-
-        platformBlocks.forEach distanceSearch@ { b ->
-            var distance = Double.POSITIVE_INFINITY;
-            for (emptyBlock in abyssBlocks) {
-                val d = b.distance(emptyBlock);
-                if (d < distance) distance = d;
-                if (d == 1.0) break;
-            }
-            b.addTag(PlatformTags.ABYSS_DISTANCE, distance);
+            it.setTag(PlatformTags.PLATFORM);
         }
 
     }

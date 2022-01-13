@@ -3,7 +3,6 @@ package ru.flinbein.laputa.structure.generator.skyland.base
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
-import ru.flinbein.laputa.LaputaPlugin
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
@@ -11,6 +10,7 @@ import ru.flinbein.laputa.structure.generator.platform.PlatformTags
 import ru.flinbein.laputa.structure.generator.skyland.SkyIslandTags
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
 import ru.flinbein.laputa.structure.generator.util.Perlin
+import ru.flinbein.laputa.structure.geometry.Point2D
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -38,7 +38,8 @@ class SkyIslandBaseGenerator: LayerGenerator {
         perlin.setSeed(perlinSeed);
 
         platformBlocks.forEach { bl ->
-            val terrainBlock = structure.getHighestBlockWithTag(bl.x, bl.z, TerrainTags.TERRAIN) ?: return@forEach;
+            val terrainHeight = bl.getTagValue(TerrainTags.TERRAIN_HEIGHT) as Int;
+            val terrainBlock = bl.getRelative(0,terrainHeight,0);
 
             val dist = bl.getTagValue(PlatformTags.ABYSS_DISTANCE) as Double;
             val poweredDist = dist.pow(distancePower);
@@ -54,9 +55,9 @@ class SkyIslandBaseGenerator: LayerGenerator {
                 else
                     SkyIslandBaseType.BOTTOM
                 ;
-                block.addTag(SkyIslandTags.BASE, type);
+                block.setTag(SkyIslandTags.BASE, type);
             }
-            terrainBlock.addTag(SkyIslandTags.BASE, SkyIslandBaseType.TOP)
+            terrainBlock.setTag(SkyIslandTags.BASE, SkyIslandBaseType.TOP)
         }
     }
 

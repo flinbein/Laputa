@@ -3,6 +3,7 @@ package ru.flinbein.laputa.structure
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import ru.flinbein.laputa.LaputaPlugin
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.geometry.Point2D
@@ -13,6 +14,7 @@ import kotlin.collections.HashMap
 
 class LaputaStructure(private var seed: Long) {
     private val blockMap = HashMap<Point3D,LaputaBlock>();
+    private val heightsMap = HashMap<Point2D, Array<Double>>(); // [minY, maxY] for each Point2D(X, Z)
     private val generatedBlockDataMap = HashMap<Point3D,BlockData>();
     private val generators: LinkedList<LayerGenerator> = LinkedList();
     private var random: Random = Random(seed);
@@ -26,9 +28,16 @@ class LaputaStructure(private var seed: Long) {
 
     fun getBlockAt(point3D: Point3D): LaputaBlock {
         val p = point3D.fixedValues();
-        return blockMap.getOrPut(p) {
+        val block = blockMap.getOrPut(p) {
             LaputaBlock(this, p)
         };
+        val p2d = Point2D(p.x,p.z);
+        val heights = heightsMap.getOrPut(p2d) {
+            arrayOf(p.y, p.y);
+        }
+        if (p.y < heights[0]) heights[0] = p.y;
+        if (p.y > heights[1]) heights[1] = p.y;
+        return block;
     }
 
     fun getBlockAt(x: Number, y: Number, z: Number): LaputaBlock {
@@ -48,26 +57,29 @@ class LaputaStructure(private var seed: Long) {
 
     // Maybe should create a block at x,0,z and check up&down for blocks;
     fun getHighestBlockAt(x: Double, z: Double): LaputaBlock? {
-        return blockMap.values.filter {
-            it.point.x == x && it.point.z == z
-        }.sortedBy {
-            it.point.y
-        }.getOrNull(0);
+        return getHighestBlockAt(Point2D(x,z));
     }
     fun getHighestBlockAt(point: Point2D): LaputaBlock? {
-        return getHighestBlockAt(point.x, point.z);
+        val heights = heightsMap[point] ?: return null;
+        val point3D = Point3D(point.x, heights[1], point.z);
+        return blockMap[point3D];
     }
 
-    // Maybe should create a block at x,z,0 and check up&down for blocks;
+    // Maybe should create a block at x,0,z and check up&down for blocks;
     fun getHighestBlockWithTag(x: Double, z: Double, tag: String): LaputaBlock? {
-        return blockMap.values.filter {
-            it.point.x == x && it.point.z == z && it.hasTag(tag)
-        }.sortedBy {
-            it.point.y
-        }.getOrNull(0);
+        return getHighestBlockWithTag(Point2D(x, z), tag);
     }
     fun getHighestBlockWithTag(point: Point2D, tag: String): LaputaBlock? {
-        return getHighestBlockWithTag(point.x, point.z, tag);
+        val heights = heightsMap[point] ?: return null;
+        val maxY = heights[1].toInt();
+        val minY = heights[0].toInt();
+        for (y in maxY downTo minY) {
+            val point3D = Point3D(point.x, y.toDouble(), point.z);
+            if (hasBlockAt(point3D).not()) continue;
+            val block = getBlockAt(point3D);
+            if (block.hasTag(tag)) return block;
+        }
+        return null;
     }
 
 
@@ -85,7 +97,10 @@ class LaputaStructure(private var seed: Long) {
         blockMap.clear();
         random = Random(seed);
         for (generator in generators) {
+            val ts = Date().time;
             generator.fill(this, random);
+            val dif = Date().time - ts;
+            LaputaPlugin.getPlugin().logger.info("GEN ${generator.javaClass.name} DONE IN ${dif}")
         }
 
         // Fill generatedBlockDataMap
@@ -96,6 +111,7 @@ class LaputaStructure(private var seed: Long) {
     }
 
     private fun fillGeneratedBlockDataMap() {
+        LaputaPlugin.getPlugin().logger.info("fillGeneratedBlockDataMap")
         generatedBlockDataMap.clear();
         val blocks = blockMap.values;
         val reversed = generators.asReversed();

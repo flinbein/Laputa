@@ -26,13 +26,14 @@ class PerlinTerrainGenerator: LayerGenerator {
         val halfMaxDistance = maxDistance / 2;
 
         platformBlocks.forEach {
-            val noise = perlin.noise(it.x, it.y);
+            val noise = perlin.noise(it.x, it.z);
             val dist = it.getTagValue(PlatformTags.ABYSS_DISTANCE) as Double;
             val poweredDist = dist.pow(distancePower);
 
             val dy = (poweredDist + noise*hillAmplitude - halfMaxDistance);
             val yDif = dy.roundToInt();
-            it.getRelative(0,yDif,0).addTag(TerrainTags.TERRAIN,dy);
+            it.setTag(TerrainTags.TERRAIN_HEIGHT, yDif);
+            it.getRelative(0,yDif,0).setTag(TerrainTags.TERRAIN,dy);
         }
     }
 

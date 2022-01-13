@@ -13,7 +13,7 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     val y: Double get() = point.y;
     val z: Double get() = point.z;
 
-    fun addTag(tag: String, value: Any? = null) {
+    fun setTag(tag: String, value: Any? = null) {
         tagMap[tag] = value;
     }
 
