@@ -1,5 +1,6 @@
 package ru.flinbein.laputa.structure.block
 
+import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.geometry.Point3D
 import ru.flinbein.laputa.structure.geometry.Vector2D
@@ -8,6 +9,7 @@ import ru.flinbein.laputa.structure.geometry.shape.Shape2D
 
 public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     private val tagMap: HashMap<String, Any?> = HashMap();
+    var blockData: BlockData? = null;
 
     val x: Double get() = point.x;
     val y: Double get() = point.y;
@@ -18,7 +20,7 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     }
 
     fun isEmpty(): Boolean {
-        return tagMap.isEmpty();
+        return tagMap.isEmpty() && blockData == null;
     }
 
     fun hasTag(tag: String): Boolean {
@@ -33,8 +35,9 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
         tagMap.remove(tag);
     }
 
-    fun removeAllTags() {
+    fun clear() {
         tagMap.clear();
+        blockData = null;
     }
 
 

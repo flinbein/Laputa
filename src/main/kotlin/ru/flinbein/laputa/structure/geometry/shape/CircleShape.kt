@@ -17,8 +17,8 @@ class CircleShape(private val radius: Double, private val center: Point2D = Poin
         return (center.x-x).pow(2) + (center.z-z).pow(2) <= sqRadius
     }
 
-    fun getRandomPoint(rand: Random): Point2D {
-        val r = rand.nextDouble().pow(0.25) * radius;
+    fun getRandomPoint(rand: Random, radiusPower: Double = 0.25): Point2D {
+        val r = rand.nextDouble().pow(radiusPower) * radius;
         val a = rand.nextDouble();
         val angle = a*2*PI;
         return Point2D(

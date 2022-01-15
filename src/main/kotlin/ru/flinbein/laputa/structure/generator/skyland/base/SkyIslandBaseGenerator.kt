@@ -21,14 +21,10 @@ class SkyIslandBaseGenerator: LayerGenerator {
     var distancePower = 1.2;
     val perlin = Perlin();
 
-
-    companion object {
-        private val MIN_HEIGHT = 3;
-
-        private val BLOCK_DATA_STONE = Bukkit.createBlockData(Material.STONE);
-        private val BLOCK_DATA_DIRT = Bukkit.createBlockData(Material.DIRT);
-        private val BLOCK_DATA_GRASS = Bukkit.createBlockData(Material.GRASS_BLOCK);
-    }
+    var bottomBlockData: BlockData = Bukkit.createBlockData(Material.STONE);
+    var middleBlockData: BlockData = Bukkit.createBlockData(Material.DIRT);
+    var topBlockData: BlockData = Bukkit.createBlockData(Material.GRASS_BLOCK);
+    var minHeight: Int = 3;
 
     override fun fill(structure: LaputaStructure, random: Random) {
         val platformBlocks = structure.getBlocksWithTag(PlatformTags.PLATFORM);
@@ -44,29 +40,22 @@ class SkyIslandBaseGenerator: LayerGenerator {
             val dist = bl.getTagValue(PlatformTags.ABYSS_DISTANCE) as Double;
             val poweredDist = dist.pow(distancePower);
             val noise = perlin.noise(bl.x, bl.z);
-            val middleCount = random.nextInt(1, MIN_HEIGHT +1);
+            val middleCount = random.nextInt(1, minHeight +1);
 
-            val totalHeight = (poweredDist+ MIN_HEIGHT + poweredDist*noise).roundToInt();
+            val totalHeight = (poweredDist+ minHeight + poweredDist*noise).roundToInt();
 
             for (dy in 1..totalHeight) {
                 val block = terrainBlock.getRelative(0, -dy, 0);
-                val type = if (dy <= middleCount)
-                    SkyIslandBaseType.MIDDLE
-                else
-                    SkyIslandBaseType.BOTTOM
-                ;
-                block.setTag(SkyIslandTags.BASE, type);
+                if (dy <= middleCount) {
+                    block.blockData = middleBlockData;
+                    block.setTag(SkyIslandTags.BASE, SkyIslandBaseType.MIDDLE);
+                } else {
+                    block.blockData = bottomBlockData;
+                    block.setTag(SkyIslandTags.BASE, SkyIslandBaseType.BOTTOM);
+                };
             }
-            terrainBlock.setTag(SkyIslandTags.BASE, SkyIslandBaseType.TOP)
+            terrainBlock.setTag(SkyIslandTags.BASE, SkyIslandBaseType.TOP);
+            terrainBlock.blockData = topBlockData;
         }
-    }
-
-    override fun getBlockData(block: LaputaBlock, random: Random, structure: LaputaStructure): BlockData? {
-        val type = (block.getTagValue(SkyIslandTags.BASE) as SkyIslandBaseType?) ?: return null;
-
-        if (type == SkyIslandBaseType.BOTTOM) return BLOCK_DATA_STONE;
-        if (type == SkyIslandBaseType.MIDDLE) return BLOCK_DATA_DIRT;
-        if (type == SkyIslandBaseType.TOP) return BLOCK_DATA_GRASS;
-        return null;
     }
 }

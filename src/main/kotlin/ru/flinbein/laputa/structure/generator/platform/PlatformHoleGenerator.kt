@@ -1,13 +1,11 @@
 package ru.flinbein.laputa.structure.generator.platform
 
 import ru.flinbein.laputa.structure.LaputaStructure
-import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.geometry.shape.CircleShape
 import ru.flinbein.laputa.structure.geometry.shape.Shape2D
 import ru.flinbein.laputa.structure.geometry.shape.UnionShape2D
 import java.util.*
-import kotlin.collections.HashSet
 
 class PlatformHoleGenerator : LayerGenerator {
 
@@ -42,7 +40,7 @@ class PlatformHoleGenerator : LayerGenerator {
 
             val holeBlocks = block.getBlocksByShape(getHoleShape(random));
             holeBlocks.forEach {
-                it.removeAllTags();
+                it.clear();
             }
         }
     }

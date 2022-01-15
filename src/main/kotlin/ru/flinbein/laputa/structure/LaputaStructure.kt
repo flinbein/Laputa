@@ -15,7 +15,7 @@ import kotlin.collections.HashMap
 class LaputaStructure(private var seed: Long) {
     private val blockMap = HashMap<Point3D,LaputaBlock>();
     private val heightsMap = HashMap<Point2D, Array<Double>>(); // [minY, maxY] for each Point2D(X, Z)
-    private val generatedBlockDataMap = HashMap<Point3D,BlockData>();
+//    private val generatedBlockDataMap = HashMap<Point3D,BlockData>();
     private val generators: LinkedList<LayerGenerator> = LinkedList();
     private var random: Random = Random(seed);
     var generated: Boolean = false
@@ -100,42 +100,20 @@ class LaputaStructure(private var seed: Long) {
             val ts = Date().time;
             generator.fill(this, random);
             val dif = Date().time - ts;
-            LaputaPlugin.getPlugin().logger.info("GEN ${generator.javaClass.name} DONE IN ${dif}")
+            LaputaPlugin.getPlugin().logger.info("GEN ${generator.javaClass.name} DONE IN $dif")
         }
-
-        // Fill generatedBlockDataMap
-        fillGeneratedBlockDataMap();
-
-
         generated = true;
     }
 
-    private fun fillGeneratedBlockDataMap() {
-        LaputaPlugin.getPlugin().logger.info("fillGeneratedBlockDataMap")
-        generatedBlockDataMap.clear();
-        val blocks = blockMap.values;
-        val reversed = generators.asReversed();
-        blocks.forEach {
-            var blockData: BlockData? = null;
-            for (layerGenerator in reversed) {
-                val bData = layerGenerator.getBlockData(it, random, this);
-                if (bData != null) {
-                    blockData = bData;
-                    break;
-                }
-            }
-            if (blockData == null) return@forEach;
-            generatedBlockDataMap[it.point] = blockData;
-        }
-    }
 
     fun preview(center: Block, player: Player) {
         if (generated.not()) {
             throw RuntimeException("Structure must be generated before previewing or applying")
         }
-        generatedBlockDataMap.forEach {
+        blockMap.forEach {
+            val blockData = it.value.blockData ?: return@forEach;
             val block = center.getRelative(it.key.x.toInt(), it.key.y.toInt(), it.key.z.toInt());
-            player.sendBlockChange(block.location, it.value);
+            player.sendBlockChange(block.location, blockData);
         }
     }
 
@@ -143,9 +121,10 @@ class LaputaStructure(private var seed: Long) {
         if (generated.not()) {
             throw RuntimeException("Structure must be generated before previewing or applying")
         }
-        generatedBlockDataMap.forEach {
+        blockMap.forEach {
+            val blockData = it.value.blockData ?: return@forEach;
             val block = center.getRelative(it.key.x.toInt(), it.key.y.toInt(), it.key.z.toInt());
-            block.blockData = it.value;
+            block.blockData = blockData;
         }
     }
 

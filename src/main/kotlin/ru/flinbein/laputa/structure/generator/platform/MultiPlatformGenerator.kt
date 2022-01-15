@@ -5,21 +5,28 @@ import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
 import ru.flinbein.laputa.structure.generator.util.range.IntRange
 import ru.flinbein.laputa.structure.geometry.shape.CircleShape
+import ru.flinbein.laputa.structure.geometry.shape.Shape2D
 import ru.flinbein.laputa.structure.geometry.shape.UnionShape2D
+import java.awt.geom.Point2D
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.pow
 
-class CirclePlatformGenerator : LayerGenerator {
+class MultiPlatformGenerator : LayerGenerator {
 
     val circleCountRange = IntRange(5,10);
     val circleRadiusRange = DoubleRange(4.0,7.0);
+    var levelCount = IntRange(0,1)
 
     private fun getRandomCircle(random: Random, shapes: List<CircleShape>): CircleShape {
         val rnd = random.nextDouble().pow(0.25);
         val index = floor(rnd*shapes.size).toInt();
         return shapes[index];
+    }
+
+    private fun generateLevel(count: Int): Shape2D {
+
     }
 
     override fun fill(structure: LaputaStructure, random: Random) {
