@@ -59,7 +59,7 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     }
 
     fun distance(block: LaputaBlock): Double {
-        return point.distance(block.point);
+        return point.getDistanceTo(block.point);
     }
 
     fun getNeighbors(withDiagonal: Boolean = false): List<LaputaBlock> {

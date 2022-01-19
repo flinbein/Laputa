@@ -11,7 +11,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.pow
 
-class CirclePlatformGenerator : LayerGenerator {
+class SimplePlatformGenerator : LayerGenerator {
 
     val circleCountRange = IntRange(5,10);
     val circleRadiusRange = DoubleRange(4.0,7.0);

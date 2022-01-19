@@ -4,7 +4,7 @@ import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import java.util.*
 
-class PlatformAbyssGenerator : LayerGenerator {
+class PlatformAbyssTagGenerator : LayerGenerator {
 
     override fun fill(structure: LaputaStructure, random: Random) {
         val platformBlocks = structure.getBlocksWithTag(PlatformTags.PLATFORM);
