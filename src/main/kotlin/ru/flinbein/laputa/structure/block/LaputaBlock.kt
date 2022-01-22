@@ -2,18 +2,20 @@ package ru.flinbein.laputa.structure.block
 
 import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
-import ru.flinbein.laputa.structure.geometry.Point3D
-import ru.flinbein.laputa.structure.geometry.Vector2D
-import ru.flinbein.laputa.structure.geometry.Vector3D
-import ru.flinbein.laputa.structure.geometry.shape.Shape2D
+import ru.flinbein.laputa.structure.geometry.Point
+import ru.flinbein.laputa.structure.geometry.Vector
 
-public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
+class LaputaBlock internal constructor(private val structure: LaputaStructure, private val blockPoint: BlockPoint) {
     private val tagMap: HashMap<String, Any?> = HashMap();
+    val point: Point;
     var blockData: BlockData? = null;
-
     val x: Double get() = point.x;
     val y: Double get() = point.y;
     val z: Double get() = point.z;
+
+    init {
+        this.point = blockPoint.toPoint()
+    }
 
     fun setTag(tag: String, value: Any? = null) {
         tagMap[tag] = value;
@@ -41,19 +43,11 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     }
 
 
-    fun getRelativeY2D(dx: Int, dz: Int): LaputaBlock {
-        return getRelative(Vector3D(dx.toDouble(),0.0,dz.toDouble()));
-    }
-    fun getRelativeY2D(v: Vector2D): LaputaBlock {
-        return getRelative(Vector3D(v.x,0.0, v.z));
-    }
-
     fun getRelative(dx: Number, dy: Number, dz: Number): LaputaBlock {
-        val p = point;
-        return structure.getBlockAt(p.x + dx.toDouble(), p.y + dy.toDouble(), p.z + dz.toDouble());
+        return getRelative(Vector(dx.toDouble(),dy.toDouble(),dz.toDouble()))
     }
 
-    fun getRelative(vector: Vector3D): LaputaBlock {
+    fun getRelative(vector: Vector): LaputaBlock {
         val p = point.move(vector);
         return structure.getBlockAt(p.x,p.y,p.z);
     }
@@ -63,7 +57,7 @@ public class LaputaBlock(val structure: LaputaStructure, val point: Point3D) {
     }
 
     fun getNeighbors(withDiagonal: Boolean = false): List<LaputaBlock> {
-        val straightNeighbors = Vector2D.fixedVectorsStraight.map { getRelativeY2D(it) };
+        val straightNeighbors = Vector.fixedVectorsStraight_Y2D.map { getRelative(it) };
         if (withDiagonal) {
             val diagonalNeighbors = Vector2D.fixedVectorsDiagonal.map { getRelativeY2D(it) };
             return straightNeighbors + diagonalNeighbors;

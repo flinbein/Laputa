@@ -4,8 +4,6 @@ import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
 import ru.flinbein.laputa.structure.generator.util.range.IntRange
-import ru.flinbein.laputa.structure.geometry.shape.CircleShape
-import ru.flinbein.laputa.structure.geometry.shape.UnionShape2D
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor

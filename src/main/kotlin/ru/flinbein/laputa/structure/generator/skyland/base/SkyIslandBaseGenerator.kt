@@ -4,13 +4,11 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
-import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.platform.PlatformTags
 import ru.flinbein.laputa.structure.generator.skyland.SkyIslandTags
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
 import ru.flinbein.laputa.structure.generator.util.Perlin
-import ru.flinbein.laputa.structure.geometry.Point2D
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt

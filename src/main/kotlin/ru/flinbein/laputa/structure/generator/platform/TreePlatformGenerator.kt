@@ -6,11 +6,6 @@ import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
 import ru.flinbein.laputa.structure.generator.util.range.IntRange
-import ru.flinbein.laputa.structure.geometry.Point2D
-import ru.flinbein.laputa.structure.geometry.Vector2D
-import ru.flinbein.laputa.structure.geometry.shape.CircleShape
-import ru.flinbein.laputa.structure.geometry.shape.Shape2D
-import ru.flinbein.laputa.structure.geometry.shape.UnionShape2D
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.sqrt

@@ -1,20 +1,20 @@
 package ru.flinbein.laputa.structure
 
 import org.bukkit.block.Block
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import ru.flinbein.laputa.LaputaPlugin
+import ru.flinbein.laputa.structure.block.BlockPoint
+import ru.flinbein.laputa.structure.block.BlockPoint2D
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
-import ru.flinbein.laputa.structure.geometry.Point2D
-import ru.flinbein.laputa.structure.geometry.Point3D
+import ru.flinbein.laputa.structure.geometry.Point
 import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.HashMap
 
 class LaputaStructure(private var seed: Long) {
-    private val blockMap = HashMap<Point3D,LaputaBlock>();
-    private val heightsMap = HashMap<Point2D, Array<Double>>(); // [minY, maxY] for each Point2D(X, Z)
+    private val blockMap = HashMap<BlockPoint, LaputaBlock>();
+    private val heightsMap = HashMap<BlockPoint2D, Array<Int>>(); // [minY, maxY] for each Point2D(X, Z)
 //    private val generatedBlockDataMap = HashMap<Point3D,BlockData>();
     private val generators: LinkedList<LayerGenerator> = LinkedList();
     private var random: Random = Random(seed);
@@ -26,17 +26,17 @@ class LaputaStructure(private var seed: Long) {
         seed = newSeed;
     };
 
-    fun getBlockAt(point3D: Point3D): LaputaBlock {
-        val p = point3D.fixedValues();
-        val block = blockMap.getOrPut(p) {
-            LaputaBlock(this, p)
+    fun getBlockAt(point: Point): LaputaBlock {
+        val bp = BlockPoint.fromPoint(point);
+        val block = blockMap.getOrPut(bp) {
+            LaputaBlock(this, bp)
         };
-        val p2d = Point2D(p.x,p.z);
-        val heights = heightsMap.getOrPut(p2d) {
-            arrayOf(p.y, p.y);
+        val bp2D = BlockPoint2D.fromPoint(point);
+        val heights = heightsMap.getOrPut(bp2D) {
+            arrayOf(bp.y, bp.y);
         }
-        if (p.y < heights[0]) heights[0] = p.y;
-        if (p.y > heights[1]) heights[1] = p.y;
+        if (bp.y < heights[0]) heights[0] = bp.y;
+        if (bp.y > heights[1]) heights[1] = bp.y;
         return block;
     }
 
@@ -44,43 +44,43 @@ class LaputaStructure(private var seed: Long) {
         val xD = x.toDouble();
         val yD = y.toDouble();
         val zD = z.toDouble();
-        val p = Point3D(xD, yD, zD).fixedValues();
-        return getBlockAt(p);
+        return getBlockAt(Point(xD, yD, zD));
     }
 
+
+    fun hasBlockAt(point: Point): Boolean {
+        return blockMap.containsKey(BlockPoint.fromPoint(point));
+    }
     fun hasBlockAt(x: Number, y: Number, z: Number): Boolean {
-        return blockMap.containsKey(Point3D(x.toDouble(),y.toDouble(),z.toDouble()));
-    }
-    fun hasBlockAt(point3D: Point3D): Boolean {
-        return blockMap.containsKey(point3D);
+        return hasBlockAt(Point(x.toDouble(),y.toDouble(),z.toDouble()));
     }
 
-    // Maybe should create a block at x,0,z and check up&down for blocks;
+
+    fun getHighestBlockAt(point: Point): LaputaBlock? {
+        val bp = BlockPoint2D.fromPoint(point);
+        val heights = heightsMap[bp] ?: return null;
+        return blockMap[BlockPoint(bp.x, heights[1], bp.z)]
+    }
     fun getHighestBlockAt(x: Double, z: Double): LaputaBlock? {
-        return getHighestBlockAt(Point2D(x,z));
-    }
-    fun getHighestBlockAt(point: Point2D): LaputaBlock? {
-        val heights = heightsMap[point] ?: return null;
-        val point3D = Point3D(point.x, heights[1], point.z);
-        return blockMap[point3D];
+        return getHighestBlockAt(Point(x,z));
     }
 
-    // Maybe should create a block at x,0,z and check up&down for blocks;
-    fun getHighestBlockWithTag(x: Double, z: Double, tag: String): LaputaBlock? {
-        return getHighestBlockWithTag(Point2D(x, z), tag);
-    }
-    fun getHighestBlockWithTag(point: Point2D, tag: String): LaputaBlock? {
-        val heights = heightsMap[point] ?: return null;
-        val maxY = heights[1].toInt();
-        val minY = heights[0].toInt();
+    fun getHighestBlockWithTag(point: Point, tag: String): LaputaBlock? {
+        val heights = heightsMap[BlockPoint2D.fromPoint(point)] ?: return null;
+        val maxY = heights[1]
+        val minY = heights[0]
         for (y in maxY downTo minY) {
-            val point3D = Point3D(point.x, y.toDouble(), point.z);
-            if (hasBlockAt(point3D).not()) continue;
-            val block = getBlockAt(point3D);
+            val pointOfBlock = Point(point.x, y.toDouble(), point.z);
+            if (hasBlockAt(pointOfBlock).not()) continue;
+            val block = getBlockAt(pointOfBlock);
             if (block.hasTag(tag)) return block;
         }
         return null;
     }
+    fun getHighestBlockWithTag(x: Double, z: Double, tag: String): LaputaBlock? {
+        return getHighestBlockWithTag(Point2D(x, z), tag);
+    }
+
 
 
     fun getBlocksWithTag(tag: String): List<LaputaBlock> {
