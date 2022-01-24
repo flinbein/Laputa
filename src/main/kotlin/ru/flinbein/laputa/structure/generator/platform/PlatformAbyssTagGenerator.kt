@@ -7,26 +7,26 @@ import java.util.*
 class PlatformAbyssTagGenerator : LayerGenerator {
 
     override fun fill(structure: LaputaStructure, random: Random) {
-        val platformBlocks = structure.getBlocksWithTag(PlatformTags.PLATFORM);
+        val platformBlocks = structure.getBlocksWithTag(PlatformTags.PLATFORM)
 
         val abyssBlocks = platformBlocks.flatMap {
             it.getNeighbors()
         }.filter {
             it.isEmpty()
-        }.distinct();
+        }.distinct()
 
         abyssBlocks.forEach {
             it.setTag(PlatformTags.ABYSS)
         }
 
         platformBlocks.forEach distanceSearch@ { b ->
-            var distance = Double.POSITIVE_INFINITY;
+            var distance = Double.POSITIVE_INFINITY
             for (emptyBlock in abyssBlocks) {
-                val d = b.distance(emptyBlock);
-                if (d < distance) distance = d;
-                if (d == 1.0) break;
+                val d = b.distance(emptyBlock)
+                if (d < distance) distance = d
+                if (d == 1.0) break
             }
-            b.setTag(PlatformTags.ABYSS_DISTANCE, distance);
+            b.setTag(PlatformTags.ABYSS_DISTANCE, distance)
         }
     }
 }

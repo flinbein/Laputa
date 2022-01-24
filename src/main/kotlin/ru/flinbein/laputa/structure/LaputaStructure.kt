@@ -78,7 +78,7 @@ class LaputaStructure(private var seed: Long) {
         return null;
     }
     fun getHighestBlockWithTag(x: Double, z: Double, tag: String): LaputaBlock? {
-        return getHighestBlockWithTag(Point2D(x, z), tag);
+        return getHighestBlockWithTag(Point.XZ(x, z), tag);
     }
 
 

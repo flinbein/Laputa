@@ -3,7 +3,8 @@ package ru.flinbein.laputa.structure.block
 import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.geometry.Point
-import ru.flinbein.laputa.structure.geometry.Vector
+import ru.flinbein.laputa.structure.geometry.Vector3D
+import ru.flinbein.laputa.structure.geometry.shape.common.Shape
 
 class LaputaBlock internal constructor(private val structure: LaputaStructure, private val blockPoint: BlockPoint) {
     private val tagMap: HashMap<String, Any?> = HashMap();
@@ -44,10 +45,10 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
 
 
     fun getRelative(dx: Number, dy: Number, dz: Number): LaputaBlock {
-        return getRelative(Vector(dx.toDouble(),dy.toDouble(),dz.toDouble()))
+        return getRelative(Vector3D(dx.toDouble(),dy.toDouble(),dz.toDouble()))
     }
 
-    fun getRelative(vector: Vector): LaputaBlock {
+    fun getRelative(vector: Vector3D): LaputaBlock {
         val p = point.move(vector);
         return structure.getBlockAt(p.x,p.y,p.z);
     }
@@ -57,24 +58,24 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
     }
 
     fun getNeighbors(withDiagonal: Boolean = false): List<LaputaBlock> {
-        val straightNeighbors = Vector.fixedVectorsStraight_Y2D.map { getRelative(it) };
+        val straightNeighbors = Vector3D.fixedVectorsStraight_Y2D.map { getRelative(it) };
         if (withDiagonal) {
-            val diagonalNeighbors = Vector2D.fixedVectorsDiagonal.map { getRelativeY2D(it) };
+            val diagonalNeighbors = Vector3D.fixedVectorsDiagonal_Y2D.map { getRelative(it) };
             return straightNeighbors + diagonalNeighbors;
         }
         return straightNeighbors;
     }
 
-    fun getBlocksByShape(shape2D: Shape2D): List<LaputaBlock> {
-        val box2D = shape2D.box2D;
+    fun getBlocksByShape(shape: Shape): List<LaputaBlock> {
+        val box = shape.borderBox;
         return sequence {
-            for (x in box2D.minX.toInt()..box2D.maxX.toInt() step 1) {
-                for (z in box2D.minZ.toInt()..box2D.maxZ.toInt() step 1) {
-                    if (shape2D.includes(x.toDouble(),z.toDouble()).not()) continue;
-
-                    yield(getRelativeY2D(x,z));
-                }
-            }
+            for (x in box.minX.toInt()..box.maxX.toInt())
+                for (y in box.minY.toInt()..box.maxY.toInt())
+                    for (z in box.minZ.toInt()..box.maxZ.toInt()) {
+                        val point = Point.XYZ(x,y,z)
+                        if (shape.includes(point).not()) continue;
+                        yield(getRelative(x,y,z))
+                    }
         }.toList();
 
     }
