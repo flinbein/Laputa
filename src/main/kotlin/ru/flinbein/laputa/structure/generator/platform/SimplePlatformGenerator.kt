@@ -2,8 +2,8 @@ package ru.flinbein.laputa.structure.generator.platform
 
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
-import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
-import ru.flinbein.laputa.structure.generator.util.range.IntRange
+import ru.flinbein.laputa.util.range.DoubleRange
+import ru.flinbein.laputa.util.range.IntRange
 import ru.flinbein.laputa.structure.geometry.shape.common.UnionShape
 import ru.flinbein.laputa.structure.geometry.shape.flat.CircleShape
 import java.util.*

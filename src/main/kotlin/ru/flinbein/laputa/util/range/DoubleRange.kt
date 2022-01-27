@@ -1,4 +1,4 @@
-package ru.flinbein.laputa.structure.generator.util.range
+package ru.flinbein.laputa.util.range
 
 import java.util.*
 

@@ -1,4 +1,4 @@
-package ru.flinbein.laputa.structure.generator.util
+package ru.flinbein.laputa.util
 
 import org.bukkit.util.noise.PerlinNoiseGenerator
 import java.awt.geom.Point2D

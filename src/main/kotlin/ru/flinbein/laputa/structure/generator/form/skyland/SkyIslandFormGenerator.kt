@@ -1,19 +1,20 @@
-package ru.flinbein.laputa.structure.generator.skyland.base
+package ru.flinbein.laputa.structure.generator.form.skyland
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
+import ru.flinbein.laputa.structure.generator.form.FormTags
+import ru.flinbein.laputa.structure.generator.form.NatureBaseBlockType
 import ru.flinbein.laputa.structure.generator.platform.PlatformTags
-import ru.flinbein.laputa.structure.generator.skyland.SkyIslandTags
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
-import ru.flinbein.laputa.structure.generator.util.Perlin
+import ru.flinbein.laputa.util.Perlin
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class SkyIslandBaseGenerator: LayerGenerator {
+class SkyIslandFormGenerator: LayerGenerator {
 
 
     var distancePower = 1.2
@@ -32,7 +33,7 @@ class SkyIslandBaseGenerator: LayerGenerator {
         perlin.setSeed(perlinSeed)
 
         platformBlocks.forEach { bl ->
-            val terrainHeight = bl.getTagValue(TerrainTags.TERRAIN_HEIGHT) as Int
+            val terrainHeight = bl.getTagValue(TerrainTags.TERRAIN_PLATFORM_HEIGHT) as Int
             val terrainBlock = bl.getRelative(0,terrainHeight,0)
 
             val dist = bl.getTagValue(PlatformTags.ABYSS_DISTANCE) as Double
@@ -46,13 +47,15 @@ class SkyIslandBaseGenerator: LayerGenerator {
                 val block = terrainBlock.getRelative(0, -dy, 0)
                 if (dy <= middleCount) {
                     block.blockData = middleBlockData
-                    block.setTag(SkyIslandTags.BASE, SkyIslandBaseType.MIDDLE)
+                    block.setTag(FormTags.BASE, NatureBaseBlockType.MIDDLE)
                 } else {
                     block.blockData = bottomBlockData
-                    block.setTag(SkyIslandTags.BASE, SkyIslandBaseType.BOTTOM)
+                    block.setTag(FormTags.BASE, NatureBaseBlockType.BOTTOM)
                 }
+                block.setTag(FormTags.DISTANCE_FROM_TERRAIN, -dy);
             }
-            terrainBlock.setTag(SkyIslandTags.BASE, SkyIslandBaseType.TOP)
+            terrainBlock.setTag(FormTags.BASE, NatureBaseBlockType.TOP)
+            terrainBlock.setTag(FormTags.DISTANCE_FROM_TERRAIN, 0)
             terrainBlock.blockData = topBlockData
         }
     }

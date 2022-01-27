@@ -11,20 +11,6 @@ data class Vector3D(val x: Double = 0.0, val y:  Double = 0.0, val z: Double = 0
 
 
     companion object {
-        val fixedVectorsStraight_Y2D = arrayListOf(
-            Vector3D(1.0,  0.0, 0.0),
-            Vector3D(-1.0, 0.0, 0.0),
-            Vector3D(0.0,  0.0, 1.0),
-            Vector3D(0.0,  0.0, -1.0),
-        )
-        val fixedVectorsDiagonal_Y2D = arrayListOf(
-            Vector3D(1.0,  0.0, 1.0),
-            Vector3D(-1.0, 0.0, 1.0),
-            Vector3D(1.0,  0.0, -1.0),
-            Vector3D(-1.0, 0.0, -1.0),
-        )
-        val fixedVectors_Y2D = fixedVectorsStraight_Y2D + fixedVectorsDiagonal_Y2D;
-
         fun betweenPoints(from: Point, to: Point): Vector3D {
             return Vector3D(to.x - from.x, to.y - from.y, to.z - from.z);
         }

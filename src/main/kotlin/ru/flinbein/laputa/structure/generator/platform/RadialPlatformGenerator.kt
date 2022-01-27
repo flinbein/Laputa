@@ -2,8 +2,8 @@ package ru.flinbein.laputa.structure.generator.platform
 
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
-import ru.flinbein.laputa.structure.generator.util.Perlin
-import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
+import ru.flinbein.laputa.util.Perlin
+import ru.flinbein.laputa.util.range.DoubleRange
 import ru.flinbein.laputa.structure.geometry.BorderBox
 import ru.flinbein.laputa.structure.geometry.Point
 import ru.flinbein.laputa.structure.geometry.Vector3D
@@ -39,7 +39,7 @@ class RadialPlatformGenerator : LayerGenerator {
 
             override fun includes(point: Point): Boolean {
                 val polarRadians = atan2(point.z,point.x)
-                val polarLength = Vector3D(x = point.x, y = point.y).length
+                val polarLength = Vector3D(x = point.x, z = point.z).length
 
                 val circlePosX = cos(polarRadians)*radius
                 val circlePosZ = sin(polarRadians)*radius

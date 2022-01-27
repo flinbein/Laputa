@@ -3,7 +3,7 @@ package ru.flinbein.laputa.structure.generator.terrain
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.platform.PlatformTags
-import ru.flinbein.laputa.structure.generator.util.Perlin
+import ru.flinbein.laputa.util.Perlin
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -32,7 +32,7 @@ class PerlinTerrainGenerator: LayerGenerator {
 
             val dy = (poweredDist + noise*hillAmplitude - halfMaxDistance)
             val yDif = dy.roundToInt()
-            it.setTag(TerrainTags.TERRAIN_HEIGHT, yDif)
+            it.setTag(TerrainTags.TERRAIN_PLATFORM_HEIGHT, yDif)
             it.getRelative(0,yDif,0).setTag(TerrainTags.TERRAIN,dy)
         }
     }

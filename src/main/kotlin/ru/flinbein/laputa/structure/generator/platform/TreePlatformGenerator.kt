@@ -4,8 +4,8 @@ import ru.flinbein.laputa.LaputaPlugin
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
-import ru.flinbein.laputa.structure.generator.util.range.DoubleRange
-import ru.flinbein.laputa.structure.generator.util.range.IntRange
+import ru.flinbein.laputa.util.range.DoubleRange
+import ru.flinbein.laputa.util.range.IntRange
 import ru.flinbein.laputa.structure.geometry.Point
 import ru.flinbein.laputa.structure.geometry.Vector3D
 import ru.flinbein.laputa.structure.geometry.shape.common.Shape

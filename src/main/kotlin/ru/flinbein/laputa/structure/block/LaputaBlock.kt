@@ -14,6 +14,27 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
     val y: Double get() = point.y;
     val z: Double get() = point.z;
 
+    companion object {
+        val neighborVectorsStraight_Y2D = arrayListOf(
+            Vector3D(1.0,  0.0, 0.0),
+            Vector3D(-1.0, 0.0, 0.0),
+            Vector3D(0.0,  0.0, 1.0),
+            Vector3D(0.0,  0.0, -1.0),
+        )
+        val neighborVectorsDiagonal_Y2D = arrayListOf(
+            Vector3D(1.0,  0.0, 1.0),
+            Vector3D(-1.0, 0.0, 1.0),
+            Vector3D(1.0,  0.0, -1.0),
+            Vector3D(-1.0, 0.0, -1.0),
+        )
+        val neighborVectors_Y2D = neighborVectorsStraight_Y2D + neighborVectorsDiagonal_Y2D;
+        val neighborVerticalVectors = arrayListOf(
+            Vector3D(0.0,1.0,0.0),
+            Vector3D(0.0,-1.0,0.0),
+        )
+        val neighborAllStraightVectors = neighborVectorsStraight_Y2D + neighborVerticalVectors;
+    }
+
     init {
         this.point = blockPoint.toPoint()
     }
@@ -57,13 +78,21 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
         return point.getDistanceTo(block.point);
     }
 
-    fun getNeighbors(withDiagonal: Boolean = false): List<LaputaBlock> {
-        val straightNeighbors = Vector3D.fixedVectorsStraight_Y2D.map { getRelative(it) };
+    fun getNeighbors(
+        withDiagonal: Boolean = false,
+        withVertical: Boolean = false
+    ): List<LaputaBlock> {
+        var neighbors = neighborVectorsStraight_Y2D.map { getRelative(it) };
         if (withDiagonal) {
-            val diagonalNeighbors = Vector3D.fixedVectorsDiagonal_Y2D.map { getRelative(it) };
-            return straightNeighbors + diagonalNeighbors;
+            val diagonalNeighbors = neighborVectorsDiagonal_Y2D.map { getRelative(it) };
+            neighbors = neighbors + diagonalNeighbors;
         }
-        return straightNeighbors;
+        if (withVertical) {
+            val verticalNeighbors = neighborVerticalVectors.map { getRelative(it) }
+            neighbors = neighbors + verticalNeighbors
+            // ToDo add diagonal-vertical neighbors if withVertical
+        }
+        return neighbors;
     }
 
     fun getBlocksByShape(shape: Shape): List<LaputaBlock> {

@@ -1,4 +1,4 @@
-package ru.flinbein.laputa.structure.generator.skyland.nature
+package ru.flinbein.laputa.structure.generator.nature
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -6,14 +6,13 @@ import org.bukkit.block.data.Bisected
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
-import ru.flinbein.laputa.structure.generator.skyland.SkyIslandTags
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
 import java.util.*
 
 class GrassGenerator : LayerGenerator {
 
     val type: GrassType = GrassType.FOREST
-    val coverage: Double = 0.7
+    val coverage: Double = 0.45
 
     companion object {
         private val flowerBlockDataArray = arrayOf(
@@ -36,7 +35,7 @@ class GrassGenerator : LayerGenerator {
 
     private fun generateGrass(terrainBlock: LaputaBlock, random: Random) {
         val relativeBlock = terrainBlock.getRelative(0, 1, 0)
-        relativeBlock.setTag(SkyIslandTags.GRASS)
+        relativeBlock.setTag(NatureTags.GRASS)
         if (type == GrassType.DESERT) {
             relativeBlock.blockData = deadBushBlockData
         } else if (type == GrassType.FOREST) {
@@ -46,7 +45,7 @@ class GrassGenerator : LayerGenerator {
             } else if (type <= 0.95) {
                 relativeBlock.blockData = tallGrassBottomBlockData
                 val upperBlock = relativeBlock.getRelative(0, 1, 0)
-                upperBlock.setTag(SkyIslandTags.GRASS)
+                upperBlock.setTag(NatureTags.GRASS)
                 upperBlock.blockData = tallGrassTopBlockData
             } else {
                 relativeBlock.blockData = fernBlockData
@@ -56,7 +55,7 @@ class GrassGenerator : LayerGenerator {
 
     private fun generateFlower(terrainBlock: LaputaBlock, random: Random) {
         val relativeBlock = terrainBlock.getRelative(0, 1, 0)
-        relativeBlock.setTag(SkyIslandTags.GRASS)
+        relativeBlock.setTag(NatureTags.GRASS)
         val flowerIndex = random.nextInt(0, flowerBlockDataArray.size)
         relativeBlock.blockData = flowerBlockDataArray[flowerIndex]
     }
