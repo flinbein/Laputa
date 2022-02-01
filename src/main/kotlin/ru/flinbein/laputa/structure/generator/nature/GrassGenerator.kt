@@ -7,6 +7,7 @@ import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
+import ru.flinbein.laputa.structure.geometry.Vector3D
 import java.util.*
 
 class GrassGenerator : LayerGenerator {
@@ -33,37 +34,39 @@ class GrassGenerator : LayerGenerator {
         (tallGrassTopBlockData as Bisected).half = Bisected.Half.TOP
     }
 
-    private fun generateGrass(terrainBlock: LaputaBlock, random: Random) {
-        val relativeBlock = terrainBlock.getRelative(0, 1, 0)
-        relativeBlock.setTag(NatureTags.GRASS)
+    private fun generateGrass(grassBlock: LaputaBlock, random: Random) {
+        grassBlock.setTag(NatureTags.GRASS)
         if (type == GrassType.DESERT) {
-            relativeBlock.blockData = deadBushBlockData
+            grassBlock.blockData = deadBushBlockData
         } else if (type == GrassType.FOREST) {
             val type = random.nextDouble()
             if (type <= 0.85) {
-                relativeBlock.blockData = grassBlockData
+                grassBlock.blockData = grassBlockData
             } else if (type <= 0.95) {
-                relativeBlock.blockData = tallGrassBottomBlockData
-                val upperBlock = relativeBlock.getRelative(0, 1, 0)
+                grassBlock.blockData = tallGrassBottomBlockData
+                val upperBlock = grassBlock.getRelative(0, 1, 0)
                 upperBlock.setTag(NatureTags.GRASS)
                 upperBlock.blockData = tallGrassTopBlockData
             } else {
-                relativeBlock.blockData = fernBlockData
+                grassBlock.blockData = fernBlockData
             }
         }
     }
 
-    private fun generateFlower(terrainBlock: LaputaBlock, random: Random) {
-        val relativeBlock = terrainBlock.getRelative(0, 1, 0)
-        relativeBlock.setTag(NatureTags.GRASS)
+    private fun generateFlower(grassBlock: LaputaBlock, random: Random) {
+        grassBlock.setTag(NatureTags.GRASS)
         val flowerIndex = random.nextInt(0, flowerBlockDataArray.size)
-        relativeBlock.blockData = flowerBlockDataArray[flowerIndex]
+        grassBlock.blockData = flowerBlockDataArray[flowerIndex]
     }
 
     override fun fill(structure: LaputaStructure, random: Random) {
-        val terrainBlocks = structure.getBlocksWithTag(TerrainTags.TERRAIN)
-        val count = (coverage*terrainBlocks.size).toInt()
-        val shuffledBlocks = terrainBlocks.shuffled(random)
+        val blocksForGrass = structure.getBlocksWithTag(TerrainTags.TERRAIN).map {
+            it.getRelative(Vector3D(0.0, 1.0, 0.0))
+        }.filter {
+            it.isEmpty();
+        }
+        val count = (coverage*blocksForGrass.size).toInt()
+        val shuffledBlocks = blocksForGrass.shuffled(random)
         for (i in 0 until count) {
             val block = shuffledBlocks[i]
             if (type === GrassType.FOREST) {

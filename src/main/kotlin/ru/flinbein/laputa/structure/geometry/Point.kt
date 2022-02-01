@@ -4,7 +4,8 @@ import java.lang.RuntimeException
 import kotlin.math.sqrt
 
 
-class Point(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
+@JvmRecord
+data class Point(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
 
     companion object {
         fun X(x: Number) = Point(x = x.toDouble())
@@ -29,10 +30,8 @@ class Point(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
         return dx*dx + dy*dy + dz*dz
     }
 
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is Point) return false
-        return other.x == x && other.y == y && other.z == z
+    override fun toString(): String {
+        return "Point($x, $y, $z)"
     }
 
     operator fun get(pos: Int): Double {

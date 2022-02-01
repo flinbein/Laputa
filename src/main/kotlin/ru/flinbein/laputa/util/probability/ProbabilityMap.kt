@@ -10,7 +10,7 @@ class ProbabilityMap<T>() {
     companion object {
         fun <ItemType> fromHashMap(map: HashMap<ItemType, Double>): ProbabilityMap<ItemType> {
             val probabilityMap = ProbabilityMap<ItemType>()
-            return probabilityMap.addSubChanceMap(map)
+            return probabilityMap.addMap(map)
         }
     }
 
@@ -34,10 +34,16 @@ class ProbabilityMap<T>() {
         return this
     }
 
-    fun addSubChanceMap(map: HashMap<T, Double>): ProbabilityMap<T> {
-        val totalSubArrayChance = map.values.sum()
+    fun addMap(map: HashMap<T, Double>): ProbabilityMap<T> {
         map.forEach {
-            addEntry(it.key, it.value / totalSubArrayChance)
+            addEntry(it.key, it.value)
+        }
+        return this
+    }
+
+    fun addSubChanceMap(map: HashMap<T, Double>, chance: Double): ProbabilityMap<T> {
+        map.forEach {
+            addEntry(it.key, it.value / chance)
         }
         return this
     }

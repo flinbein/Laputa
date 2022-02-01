@@ -41,7 +41,7 @@ class SimpleOreGenerator() : LayerGenerator {
 
     var oreProbabilityMap = DEFAULT_ORE_PROBABILITY_MAP.clone();
     var growCountMap: HashMap<Material, IntRange> = GROW_COUNT_MAP;
-    var coverage: Double = 0.3;
+    var coverage: Double = 0.01;
 
 
     override fun fill(structure: LaputaStructure, random: Random) {
