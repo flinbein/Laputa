@@ -1,6 +1,5 @@
 package ru.flinbein.laputa.util.probability
 
-import ru.flinbein.laputa.LaputaPlugin
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -42,11 +41,21 @@ class ProbabilityMap<T>() {
     }
 
     fun addSubChanceMap(map: HashMap<T, Double>, chance: Double): ProbabilityMap<T> {
+        val chanceSum = map.values.sum()
         map.forEach {
-            addEntry(it.key, it.value / chance)
+            addEntry(it.key, it.value / chanceSum * chance)
         }
         return this
     }
+
+    fun addSubChanceList(list: List<T>, chance: Double): ProbabilityMap<T> {
+        val chanceSum = list.size
+        list.forEach {
+            addEntry(it, 1.0 / chanceSum * chance)
+        }
+        return this
+    }
+
 
     fun getRandomItem(random: Random): T {
         val chance = random.nextDouble(0.0, totalChanceSum)

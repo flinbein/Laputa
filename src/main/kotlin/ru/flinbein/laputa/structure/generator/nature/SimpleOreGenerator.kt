@@ -2,11 +2,12 @@ package ru.flinbein.laputa.structure.generator.nature
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.form.FormTags
-import ru.flinbein.laputa.structure.generator.form.NatureBaseBlockType
+import ru.flinbein.laputa.structure.generator.form.FormBaseBlockType
 import ru.flinbein.laputa.util.array.random
 import ru.flinbein.laputa.util.probability.ProbabilityMap
 import ru.flinbein.laputa.util.range.IntRange
@@ -46,7 +47,7 @@ class SimpleOreGenerator() : LayerGenerator {
 
     override fun fill(structure: LaputaStructure, random: Random) {
         val baseBlocks = structure.getBlocksWithTag(FormTags.BASE).filter {
-            it.getTagValue(FormTags.BASE) == NatureBaseBlockType.BOTTOM
+            it.getTagValue(FormTags.BASE) == FormBaseBlockType.BOTTOM
         }.shuffled(random);
         val countOfOrePlaces = (baseBlocks.size * coverage).roundToInt();
         for (i in 0..countOfOrePlaces) {
@@ -56,7 +57,6 @@ class SimpleOreGenerator() : LayerGenerator {
 
     private fun placeOre(block: LaputaBlock, ore: Material) {
         block.setTag(NatureTags.ORE, ore);
-        block.blockData = Bukkit.createBlockData(ore);
     }
 
     private fun growOre(block: LaputaBlock, random: Random) {
@@ -75,5 +75,10 @@ class SimpleOreGenerator() : LayerGenerator {
             placeOre(neighbor, oreType)
             blocks.add(neighbor);
         }
+    }
+
+    override fun handleBlock(block: LaputaBlock, random: Random, structure: LaputaStructure): BlockData? {
+        val ore = block.getTagValue(NatureTags.ORE) ?: return null;
+        return Bukkit.createBlockData(ore as Material);
     }
 }

@@ -13,13 +13,12 @@ class Lake {
 
     fun hasLevels() = levels.isEmpty().not();
 
-    private fun getMinHeight(): Double {
+    fun getMinHeight(): Double {
         return levels.minOf { it.y };
     }
 
-    fun getLevelBelowHeight(height: Double): List<LakeLevel> {
-        val min = getMinHeight();
-        return levels.filter { it.y <= min+height }
+    fun getLevels(): List<LakeLevel> {
+        return levels;
     }
 
     fun getHeight(): Double {

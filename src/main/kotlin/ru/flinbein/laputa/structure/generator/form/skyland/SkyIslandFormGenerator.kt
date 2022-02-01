@@ -4,9 +4,10 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
+import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.form.FormTags
-import ru.flinbein.laputa.structure.generator.form.NatureBaseBlockType
+import ru.flinbein.laputa.structure.generator.form.FormBaseBlockType
 import ru.flinbein.laputa.structure.generator.platform.PlatformTags
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
 import ru.flinbein.laputa.util.Perlin
@@ -46,17 +47,26 @@ class SkyIslandFormGenerator: LayerGenerator {
             for (dy in 1..totalHeight) {
                 val block = terrainBlock.getRelative(0, -dy, 0)
                 if (dy <= middleCount) {
-                    block.blockData = middleBlockData
-                    block.setTag(FormTags.BASE, NatureBaseBlockType.MIDDLE)
+                    block.setTag(FormTags.BASE, FormBaseBlockType.MIDDLE)
                 } else {
-                    block.blockData = bottomBlockData
-                    block.setTag(FormTags.BASE, NatureBaseBlockType.BOTTOM)
+                    block.setTag(FormTags.BASE, FormBaseBlockType.BOTTOM)
                 }
                 block.setTag(FormTags.DISTANCE_FROM_TERRAIN, -dy);
+                block.abstract = false;
             }
-            terrainBlock.setTag(FormTags.BASE, NatureBaseBlockType.TOP)
+            terrainBlock.setTag(FormTags.BASE, FormBaseBlockType.TOP)
             terrainBlock.setTag(FormTags.DISTANCE_FROM_TERRAIN, 0)
-            terrainBlock.blockData = topBlockData
+            terrainBlock.abstract = false;
+        }
+    }
+
+    override fun handleBlock(block: LaputaBlock, random: Random, structure: LaputaStructure): BlockData? {
+        val type = block.getTagValue(FormTags.BASE) ?: return null
+        return when (type) {
+            FormBaseBlockType.BOTTOM -> bottomBlockData
+            FormBaseBlockType.MIDDLE -> middleBlockData
+            FormBaseBlockType.TOP -> topBlockData
+            else -> null
         }
     }
 }

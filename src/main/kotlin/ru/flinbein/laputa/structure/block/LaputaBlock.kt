@@ -1,6 +1,5 @@
 package ru.flinbein.laputa.structure.block
 
-import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.geometry.Point
 import ru.flinbein.laputa.structure.geometry.Vector3D
@@ -8,8 +7,12 @@ import ru.flinbein.laputa.structure.geometry.shape.common.Shape
 
 class LaputaBlock internal constructor(private val structure: LaputaStructure, private val blockPoint: BlockPoint) {
     private val tagMap: HashMap<String, Any?> = HashMap();
-    val point: Point;
-    var blockData: BlockData? = null;
+
+    /**
+     * @description abstract means that block only consists tags and will not be placed as a minecraft block
+     */
+    var abstract: Boolean = true
+    val point: Point = blockPoint.toPoint();
     val x: Double get() = point.x;
     val y: Double get() = point.y;
     val z: Double get() = point.z;
@@ -35,16 +38,16 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
         val neighborAllStraightVectors = neighborVectorsStraight_Y2D + neighborVerticalVectors;
     }
 
-    init {
-        this.point = blockPoint.toPoint()
-    }
-
     fun setTag(tag: String, value: Any? = null) {
         tagMap[tag] = value;
     }
 
     fun isEmpty(): Boolean {
-        return tagMap.isEmpty() && blockData == null;
+        return tagMap.isEmpty();
+    }
+
+    fun isEmptyOrAbstract(): Boolean {
+        return abstract || isEmpty()
     }
 
     fun hasTag(tag: String): Boolean {
@@ -61,7 +64,7 @@ class LaputaBlock internal constructor(private val structure: LaputaStructure, p
 
     fun clear() {
         tagMap.clear();
-        blockData = null;
+        abstract = true;
     }
 
 

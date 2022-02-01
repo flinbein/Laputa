@@ -3,19 +3,28 @@ package ru.flinbein.laputa.structure.generator.nature
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
 import ru.flinbein.laputa.structure.LaputaStructure
 import ru.flinbein.laputa.structure.block.LaputaBlock
 import ru.flinbein.laputa.structure.generator.LayerGenerator
 import ru.flinbein.laputa.structure.generator.terrain.TerrainTags
 import ru.flinbein.laputa.structure.geometry.Vector3D
+import ru.flinbein.laputa.util.probability.ProbabilityMap
 import java.util.*
 
 class GrassGenerator : LayerGenerator {
 
-    val type: GrassType = GrassType.FOREST
     val coverage: Double = 0.45
 
     companion object {
+        @JvmStatic
+        private val tallGrassBottomBlockData = Bukkit.createBlockData(Material.TALL_GRASS)
+        @JvmStatic
+        private val tallGrassTopBlockData = Bukkit.createBlockData(Material.TALL_GRASS) {
+            (it as Bisected).half = Bisected.Half.TOP
+        }
+
+        @JvmStatic
         private val flowerBlockDataArray = arrayOf(
             Material.DANDELION, Material.POPPY, Material.BLUE_ORCHID,
             Material.ALLIUM, Material.AZURE_BLUET, Material.RED_TULIP,
@@ -23,40 +32,31 @@ class GrassGenerator : LayerGenerator {
             Material.OXEYE_DAISY, Material.CORNFLOWER, Material.LILY_OF_THE_VALLEY
         ).map { Bukkit.createBlockData(it) }
 
-        private val grassBlockData = Bukkit.createBlockData(Material.GRASS)
-        private val tallGrassTopBlockData = Bukkit.createBlockData(Material.TALL_GRASS)
-        private val tallGrassBottomBlockData = Bukkit.createBlockData(Material.TALL_GRASS)
+        @JvmStatic
         private val fernBlockData = Bukkit.createBlockData(Material.FERN)
-        private val deadBushBlockData = Bukkit.createBlockData(Material.DEAD_BUSH)
+
+
+        @JvmStatic
+        private val forestVegetationProbabilityMap = ProbabilityMap.fromHashMap(hashMapOf(
+            Bukkit.createBlockData(Material.GRASS) to 100.0,
+            tallGrassBottomBlockData to 50.0,
+            fernBlockData to 5.0,
+        )).addSubChanceList(flowerBlockDataArray, 10.0)
+
+
+        @JvmStatic
+        private val desertVegetationProbabilityMap = ProbabilityMap.fromHashMap(hashMapOf(
+            Bukkit.createBlockData(Material.DEAD_BUSH) to 1.0
+        ))
     }
 
-    init {
-        (tallGrassTopBlockData as Bisected).half = Bisected.Half.TOP
-    }
+    private var vegetationProbabilityMap: ProbabilityMap<BlockData> = forestVegetationProbabilityMap;
 
-    private fun generateGrass(grassBlock: LaputaBlock, random: Random) {
-        grassBlock.setTag(NatureTags.GRASS)
-        if (type == GrassType.DESERT) {
-            grassBlock.blockData = deadBushBlockData
-        } else if (type == GrassType.FOREST) {
-            val type = random.nextDouble()
-            if (type <= 0.85) {
-                grassBlock.blockData = grassBlockData
-            } else if (type <= 0.95) {
-                grassBlock.blockData = tallGrassBottomBlockData
-                val upperBlock = grassBlock.getRelative(0, 1, 0)
-                upperBlock.setTag(NatureTags.GRASS)
-                upperBlock.blockData = tallGrassTopBlockData
-            } else {
-                grassBlock.blockData = fernBlockData
-            }
+    fun setType(type: GrassType) {
+        vegetationProbabilityMap = when (type) {
+            GrassType.DESERT -> desertVegetationProbabilityMap
+            else -> forestVegetationProbabilityMap;
         }
-    }
-
-    private fun generateFlower(grassBlock: LaputaBlock, random: Random) {
-        grassBlock.setTag(NatureTags.GRASS)
-        val flowerIndex = random.nextInt(0, flowerBlockDataArray.size)
-        grassBlock.blockData = flowerBlockDataArray[flowerIndex]
     }
 
     override fun fill(structure: LaputaStructure, random: Random) {
@@ -69,17 +69,20 @@ class GrassGenerator : LayerGenerator {
         val shuffledBlocks = blocksForGrass.shuffled(random)
         for (i in 0 until count) {
             val block = shuffledBlocks[i]
-            if (type === GrassType.FOREST) {
-                val rnd = random.nextDouble()
-                if (rnd < 0.95) {
-                    generateGrass(block,random)
-                } else {
-                    generateFlower(block, random)
-                }
-            } else {
-                generateGrass(block,random)
+            val randomBlockData = vegetationProbabilityMap.getRandomItem(random);
+            block.setTag(NatureTags.GRASS, randomBlockData);
+            block.abstract = false;
+            if (randomBlockData.material == Material.TALL_GRASS) {
+                val aboveBlock = block.getRelative(0.0, 1.0, 0.0);
+                aboveBlock.setTag(NatureTags.GRASS, tallGrassTopBlockData);
+                aboveBlock.abstract = false;
             }
         }
+    }
+
+    override fun handleBlock(block: LaputaBlock, random: Random, structure: LaputaStructure): BlockData? {
+        val blockData = block.getTagValue(NatureTags.GRASS) ?: return null;
+        return blockData as BlockData;
     }
 
     enum class GrassType {

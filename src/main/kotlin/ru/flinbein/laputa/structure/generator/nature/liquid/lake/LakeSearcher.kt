@@ -9,8 +9,7 @@ import java.util.HashSet
 
 class LakeSearcher(
     private val abyssPoints: List<Point>,
-    private val structure: LaputaStructure,
-    private val allowWaterfallBlockCount: Int = 0
+    private val structure: LaputaStructure
 ) {
 
     fun search(point: Point, modifiableIgnoredPoints: HashSet<Point>): Lake? {
@@ -41,7 +40,6 @@ class LakeSearcher(
                 isPointAbyss(it);
             }
             if (isMetAbyss) {
-                LaputaPlugin.getPlugin().logger.info("MET ABYSS");
                 return false;
             }
             // neighbors - only empty blocks (or non-existing blocks)
@@ -59,7 +57,6 @@ class LakeSearcher(
 
         // Search levels below
 
-        LaputaPlugin.getPlugin().logger.info("SEARCH BELOW");
         val pointsToSearchBelow = foundPoints.map {
             it.move(Vector3D(0.0,-1.0,0.0))
         }.filter {
@@ -79,7 +76,6 @@ class LakeSearcher(
         if (onlyBelow) return true;
 
         // search above
-        LaputaPlugin.getPlugin().logger.info("SEARCH ABOVE")
         val pointsToSearchAbove = foundPoints.map {
             it.move(Vector3D(0.0,1.0,0.0))
         }
