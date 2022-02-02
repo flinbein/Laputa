@@ -62,6 +62,13 @@ class LaputaStructure(private var seed: Long) {
     fun hasNonEmptyBlockAt(x: Number, y: Number, z: Number): Boolean {
         return hasNonEmptyBlockAt(Point(x.toDouble(),y.toDouble(),z.toDouble()));
     }
+    fun hasNonAbstractBlock(point: Point): Boolean {
+        val b = blockMap[BlockPoint.fromPoint(point)] ?: return false;
+        return b.abstract.not();
+    }
+    fun hasNonAbstractBlock(x: Number, y: Number, z: Number): Boolean {
+        return hasNonAbstractBlock(Point(x.toDouble(),y.toDouble(),z.toDouble()))
+    }
 
 
     fun getHighestBlockAt(point: Point): LaputaBlock? {

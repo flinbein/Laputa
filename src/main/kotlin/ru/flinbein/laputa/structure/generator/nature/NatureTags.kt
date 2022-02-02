@@ -5,5 +5,6 @@ class NatureTags {
         const val GRASS = "nature:grass"
         const val ORE = "nature:ore"
         const val LAKE = "nature:lake"
+        const val TREE = "nature:tree"
     }
 }
