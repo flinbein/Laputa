@@ -128,6 +128,12 @@ class LaputaStructure(private var seed: Long) {
         generated = true;
     }
 
+    fun getBlockMap(): HashMap<BlockPoint, BlockData> {
+        if (generated.not()) {
+            throw RuntimeException("Structure must be generated first")
+        }
+        return generatedBlockDataMap.clone() as HashMap<BlockPoint, BlockData>
+    }
 
     fun preview(center: Block, player: Player) {
         if (generated.not()) {
